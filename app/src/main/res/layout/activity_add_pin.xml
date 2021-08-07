@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddPinActivity">
+
+    <TextView
+        android:id="@+id/tvLatLon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/lat_lon"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/backButton"
+        app:layout_constraintStart_toEndOf="@+id/backButton"
+        app:layout_constraintTop_toTopOf="@+id/backButton" />
+
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvLatLon"
+        app:layout_constraintStart_toEndOf="@+id/tvLatLon"
+        app:layout_constraintTop_toTopOf="@+id/tvLatLon"
+        tools:text="47.123, -127.999" />
+
+    <TextView
+        android:id="@+id/tvHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/time_viewed"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvOptional" />
+
+    <TextView
+        android:id="@+id/tvAvailableCookies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/cookie_types_available"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvHours" />
+
+    <TextView
+        android:id="@+id/tvAdditionalNotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="128dp"
+        android:text="@string/additionalnotes"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/etNotes"
+        android:layout_width="300dp"
+        android:layout_height="87dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:autofillHints=""
+        tools:ignore="LabelFor" />
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        android:contentDescription="@string/back_button" />
+
+    <EditText
+        android:id="@+id/etTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:inputType="time"
+        app:layout_constraintStart_toEndOf="@+id/tvHours"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
+        tools:layout_editor_absoluteY="171dp"
+        android:autofillHints=""
+        tools:ignore="LabelFor" />
+
+    <TextView
+        android:id="@+id/tvOptional"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="@string/optional_information"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

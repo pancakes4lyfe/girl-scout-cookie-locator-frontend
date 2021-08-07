@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">GirlScoutCookieLocator</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="latitude">Latitude</string>
+    <string name="save">Save</string>
+    <string name="button_to_add_new_pin">Button to add new pin</string>
+    <string name="additionalnotes">AdditionalNotes</string>
+    <string name="cookie_types_available">Cookie Types Available:</string>
+    <string name="time_viewed">Time Viewed:</string>
+    <string name="lat_lon">Lat/Lon:</string>
+    <string name="optional_information">Optional Information:</string>
+    <string name="back_button">back button</string>
+</resources>
