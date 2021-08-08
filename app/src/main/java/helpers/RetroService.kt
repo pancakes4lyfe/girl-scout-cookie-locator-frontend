@@ -14,10 +14,10 @@ interface RetroService {
 //        "Content-Type: application/json")
     fun getPinsList(): Call<List<Pin>>
 
-//    @POST("pins")
+    @POST("pins")
 //    @Headers(
 //        "Accept: application/json",
 //        "Content-Type: application/json")
 //    // Can add authorization to 'Headers' section if needed
-//    fun createPin(@Body params: Pin): Call<PinResponse>
+    fun createPin(@Body params: Pin): Call<PinResponse>
 }

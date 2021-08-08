@@ -89,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         })
     }
 
-    // takes in list of lats/lons in string formate and converts them into pins on map
+    // takes in list of lats/lons in string format and converts them into pins on map
     private fun generateAllPins(coords: MutableList<String>) {
         for (i in 0 until coords.count()) {
             // Coordinates

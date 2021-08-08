@@ -7,12 +7,44 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.girlscoutcookielocator.databinding.ActivityAddPinBinding
+import helpers.Pin
+import helpers.PinResponse
+import helpers.RetroInstance
+import helpers.RetroService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 private const val TAG = "Add Pin Activity"
 
 class AddPinActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddPinBinding
+    private lateinit var newPin: Pin
+
+    private fun createPin() {
+        newPin = Pin("", binding.tvLocation.text.toString())
+    }
+
+    private fun saveNewPin(newPin: Pin) {
+        val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
+        val call = retroInstance.createPin(newPin)
+        call.enqueue(object : Callback<PinResponse> {
+
+            /* The HTTP call failed. This method is run on the main thread */
+            override fun onFailure(call: Call<PinResponse>, t: Throwable) {
+                Log.d("TAG_", "An error happened!")
+                t.printStackTrace()
+            }
+            /* The HTTP call was successful, we should still check status code and response body
+             * on a production app. This method is run on the main thread */
+            override fun onResponse(call: Call<PinResponse>, response: Response<PinResponse>) {
+                /* This will print the response of the network call to the Logcat */
+                Log.d("TAG_", response.body().toString())
+            }
+        })
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +76,8 @@ class AddPinActivity : AppCompatActivity() {
             //Error handling if some text inputs are blank (probably not necessary)
             // Logic to do stuff when save is selected (maybe make an api call??)
 
+            createPin()
+            saveNewPin(newPin)
             //Goes back to previous activity (back to map)(should be last piece of logic done)
             val intent = Intent(this@AddPinActivity, MapsActivity::class.java)
             startActivity(intent)
