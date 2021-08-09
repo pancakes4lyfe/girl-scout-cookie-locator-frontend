@@ -6,7 +6,10 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -54,8 +57,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             .position(location)
             .title("New Pin")
             .snippet(location.toString()))
-//        These line were attempting to make add button visible on pin drop
-        binding.fabAddPin.visibility = View.VISIBLE
     }
 
     // makes get request to get all pins stored in database
@@ -119,21 +120,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Maybe use doAsync around this??? Or is enqueue async itself
         getAllPins()
 
-//        getting all pins from backend
-//        flaskHelper.getAllPins()
-//        Log.i(TAG, "got pins list")
-
         mapFragment.view?.let {
             Snackbar.make(it, "Long press to add a marker", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Ok") {}
                 .setActionTextColor(ContextCompat.getColor(this, android.R.color.white))
                 .show()
-        }
-        binding.fabAddPin.setOnClickListener {
-            Log.i(TAG, "Tap on + button")
-            val intent = Intent(this@MapsActivity, AddPinActivity::class.java)
-            intent.putExtra("coordinates", "${currentMarker.position.latitude}, ${currentMarker.position.longitude}")
-            startActivity(intent)
         }
     }
 
@@ -172,7 +163,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMarkerClickListener(this)
 
 //        setUpMap()
-        // 1
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -194,7 +185,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
             // Got last known location. In some rare situations this can be null.
-            // 3
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
@@ -202,5 +192,28 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_maps, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.miAddPin) {
+            Log.i(TAG, "Tapped on Add Pin!")
+            if (this::currentMarker.isInitialized) {
+                //Goes to AddPin activity
+                val intent = Intent(this@MapsActivity, AddPinActivity::class.java)
+                intent.putExtra("coordinates", "${currentMarker.position.latitude}, ${currentMarker.position.longitude}")
+                startActivity(intent)
+            } else {
+                Toast.makeText(this,"Please drop a pin first", Toast.LENGTH_LONG).show()
+                return true
+            }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onMarkerClick(p0: Marker?) = false
 }
