@@ -28,6 +28,7 @@ import helpers.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 private const val TAG = "Map Activity"
 
@@ -160,18 +161,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             } else {
                 placeMarkerOnMap(LatLng)
             }
-
 //            map.addMarker(MarkerOptions().position(LatLng).title("New Marker").snippet("description"))
         }
-//        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-////        // default camera settings when map loaded
-////        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10.0f))
 
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
+
+        // Sets up bottom sheet to display on click of a pin's info window
+        map.setOnInfoWindowClickListener {
+            val dialog = BottomSheetDialog(this)
+            val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
+//            val btnClose = view.findViewById<Button>(R.id.idBtnDismiss)
+//            btnClose.setOnClickListener {
+//                // on below line we are calling a dismiss method to close our dialog.
+//                dialog.dismiss()
+//            }
+            dialog.setCancelable(true)
+            dialog.setContentView(view)
+            dialog.show()
+        }
 
 //        setUpMap()
 
