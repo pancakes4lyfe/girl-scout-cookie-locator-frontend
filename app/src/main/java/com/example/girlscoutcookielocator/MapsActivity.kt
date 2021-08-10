@@ -159,11 +159,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
 
-//        map.setOnMapClickListener {
-//            if (this::newMarker.isInitialized) {
-//                newMarker.remove()
-//            }
-//        }
+        map.setOnMapClickListener {
+            if (this::newMarker.isInitialized) {
+                newMarker.remove()
+            }
+        }
 
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
