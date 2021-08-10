@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".AddPinActivity">
 
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        android:contentDescription="@string/back_button" />
+
     <TextView
         android:id="@+id/tvLatLon"
         android:layout_width="wrap_content"
@@ -27,6 +38,18 @@
         app:layout_constraintStart_toEndOf="@+id/tvLatLon"
         app:layout_constraintTop_toTopOf="@+id/tvLatLon"
         tools:text="47.123, -127.999" />
+
+    <TextView
+        android:id="@+id/tvOptional"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="@string/optional_information"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvHours"
@@ -55,38 +78,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
-        android:layout_marginBottom="128dp"
-        android:text="@string/additionalnotes"
+        android:layout_marginTop="32dp"
+        android:text="Additional Notes:"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/etNotes"
-        android:layout_width="300dp"
-        android:layout_height="87dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginBottom="16dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:autofillHints=""
-        tools:ignore="LabelFor" />
-
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable"
-        android:contentDescription="@string/back_button" />
+        app:layout_constraintTop_toBottomOf="@+id/tvAvailableCookies" />
 
     <EditText
         android:id="@+id/etTime"
@@ -97,19 +93,18 @@
         android:inputType="time"
         app:layout_constraintStart_toEndOf="@+id/tvHours"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
-        tools:layout_editor_absoluteY="171dp"
-        android:autofillHints=""
-        tools:ignore="LabelFor" />
+        tools:layout_editor_absoluteY="109dp" />
 
-    <TextView
-        android:id="@+id/tvOptional"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="@string/optional_information"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/etNotes"
+        android:layout_width="305dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintStart_toStartOf="@+id/tvAdditionalNotes"
+        app:layout_constraintTop_toBottomOf="@+id/tvAdditionalNotes" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

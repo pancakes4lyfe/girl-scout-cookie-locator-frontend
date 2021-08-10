@@ -76,36 +76,47 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 /* This will print the response of the network call to the Logcat */
                 Log.d("TAG_", response.body().toString())
                 val items = response.body()
-                val latLonList = mutableListOf<String>()
+                val pinsList = mutableListOf<Pin>()
                 if (items != null) {
                     for (i in 0 until items.count()) {
-                        // Coordinates
-                        val latLon = items[i].lat_lon ?: "N/A"
-                        latLonList.add(latLon)
+                        pinsList.add(items[i])
+//                        // Coordinates
+//                        val latLon = items[i].lat_lon ?: "N/A"
+//                        pinsList.add(latLon)
+//                        //Notes
+//                        val notes = items[i].notes ?: "N/A"
+
                     }
                 }
-                Log.d("Lat/Lon: ", latLonList.toString())
-                generateAllPins(coords = latLonList)
+                Log.d("Lat/Lon: ", pinsList.toString())
+                generateAllPins(pins = pinsList)
             }
         })
     }
 
-    // takes in list of lats/lons in string format and converts them into pins on map
-    private fun generateAllPins(coords: MutableList<String>) {
-        for (i in 0 until coords.count()) {
+    // takes in list of pin info in string format and converts them into pins on map
+    private fun generateAllPins(pins: MutableList<Pin>) {
+        for (i in 0 until pins.count()) {
             // Coordinates
-            val latLon = coords[i].split(",").toTypedArray()
+            val latLon = pins[i].lat_lon.split(",").toTypedArray()
             val latitude = latLon[0].toDouble()
             val longitude = latLon[1].toDouble()
             val location = LatLng(latitude, longitude)
-            map.addMarker(MarkerOptions().position(location).title("Cookie Marker"))
+            // Notes
+            val notes = pins[i].notes
+            // Pinned_at
+            var pinnedAt = pins[i].pinned_at
+            if (pins[i].pinned_at == null) {
+                pinnedAt = "A placeholder date"
+            }
+
+            map.addMarker(MarkerOptions().position(location).title(pinnedAt).snippet("Click here for more info"))
 
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

@@ -23,7 +23,8 @@ class AddPinActivity : AppCompatActivity() {
     private lateinit var newPin: Pin
 
     private fun createPin() {
-        newPin = Pin("", binding.tvLocation.text.toString())
+        //Maybe add conditional for if notes section is empty????
+        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "")
     }
 
     private fun saveNewPin(newPin: Pin) {
@@ -49,7 +50,7 @@ class AddPinActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddPinBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_add_pin)
+//        setContentView(R.layout.activity_add_pin)
         setContentView(binding.root)
 
         //Sets coordinates as dropped pin coordinates (grabs info sent from previous activity through intent)
@@ -85,4 +86,5 @@ class AddPinActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 }
