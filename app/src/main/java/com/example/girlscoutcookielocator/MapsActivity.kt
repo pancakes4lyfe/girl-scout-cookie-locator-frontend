@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -36,10 +37,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
 //    private val client = OkHttpClient()
     private lateinit var map: GoogleMap
-    private lateinit var currentMarker: Marker
+    private lateinit var newMarker: Marker
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
+    private lateinit var selectedPin: Pin
 //    companion object {
 //        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
 //    }
@@ -54,7 +56,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 //    }
 
     private fun placeMarkerOnMap(location: LatLng) {
-        currentMarker = map.addMarker(MarkerOptions()
+        newMarker = map.addMarker(MarkerOptions()
             .position(location)
             .title("New Pin")
             .snippet(location.toString()))
@@ -81,15 +83,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 if (items != null) {
                     for (i in 0 until items.count()) {
                         pinsList.add(items[i])
-//                        // Coordinates
-//                        val latLon = items[i].lat_lon ?: "N/A"
-//                        pinsList.add(latLon)
-//                        //Notes
-//                        val notes = items[i].notes ?: "N/A"
-
                     }
                 }
-                Log.d("Lat/Lon: ", pinsList.toString())
+                Log.d("Pins: ", pinsList.toString())
                 generateAllPins(pins = pinsList)
             }
         })
@@ -111,7 +107,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 pinnedAt = "A placeholder date"
             }
 
-            map.addMarker(MarkerOptions().position(location).title(pinnedAt).snippet("Click here for more info"))
+            var newPin = map.addMarker(MarkerOptions().position(location).title(pinnedAt).snippet("Click here for more info"))
+            newPin.tag = pins[i]
 
         }
     }
@@ -154,31 +151,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMapLongClickListener { LatLng ->
             //Like a console.log to make sure something is happening
             Log.i(TAG, "onMapLongClickListener")
-//            map.clear()
-            if (this::currentMarker.isInitialized) {
-                currentMarker.remove()
+            if (this::newMarker.isInitialized) {
+                newMarker.remove()
                 placeMarkerOnMap(LatLng)
             } else {
                 placeMarkerOnMap(LatLng)
             }
-//            map.addMarker(MarkerOptions().position(LatLng).title("New Marker").snippet("description"))
         }
+
+//        map.setOnMapClickListener {
+//            if (this::newMarker.isInitialized) {
+//                newMarker.remove()
+//            }
+//        }
 
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
 
         // Sets up bottom sheet to display on click of a pin's info window
         map.setOnInfoWindowClickListener {
-            val dialog = BottomSheetDialog(this)
-            val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
-//            val btnClose = view.findViewById<Button>(R.id.idBtnDismiss)
-//            btnClose.setOnClickListener {
-//                // on below line we are calling a dismiss method to close our dialog.
-//                dialog.dismiss()
-//            }
-            dialog.setCancelable(true)
-            dialog.setContentView(view)
-            dialog.show()
+            if (it.title != "New Pin") {
+                val dialog = BottomSheetDialog(this)
+                val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
+
+                val date = view.findViewById<TextView>(R.id.tvPinnedAt)
+                val notes = view.findViewById<TextView>(R.id.tvNotes)
+                date.text = "Date Pinned: ${selectedPin.pinned_at.toString()}"
+                notes.text = "Notes: ${selectedPin.notes.toString()}"
+
+                dialog.setCancelable(true)
+                dialog.setContentView(view)
+                dialog.show()
+            }
         }
 
 //        setUpMap()
@@ -212,6 +216,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    override fun onMarkerClick(marker: Marker): Boolean {
+        if (marker.title != "New Pin") {
+            selectedPin = marker.tag as Pin
+        }
+        // Retrieve the data from the marker.
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_maps, menu)
         return super.onCreateOptionsMenu(menu)
@@ -220,10 +236,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.miAddPin) {
             Log.i(TAG, "Tapped on Add Pin!")
-            if (this::currentMarker.isInitialized) {
+            if (this::newMarker.isInitialized) {
                 //Goes to AddPin activity
                 val intent = Intent(this@MapsActivity, AddPinActivity::class.java)
-                intent.putExtra("coordinates", "${currentMarker.position.latitude}, ${currentMarker.position.longitude}")
+                intent.putExtra("coordinates", "${newMarker.position.latitude}, ${newMarker.position.longitude}")
                 startActivity(intent)
             } else {
                 Toast.makeText(this,"Please drop a pin first", Toast.LENGTH_LONG).show()
@@ -234,5 +250,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onMarkerClick(p0: Marker?) = false
+//    override fun onMarkerClick(p0: Marker?) = false
 }
