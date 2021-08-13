@@ -1,6 +1,5 @@
 package com.example.girlscoutcookielocator
 
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -8,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -30,36 +29,43 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 
 private const val TAG = "Map Activity"
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-//    private val client = OkHttpClient()
     private lateinit var map: GoogleMap
     private lateinit var newMarker: Marker
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
+    private lateinit var previousMarker: Marker
     private lateinit var selectedPin: Pin
-//    companion object {
-//        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
-//    }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
 
-//    private fun setUpMap() {
-//        if (ActivityCompat.checkSelfPermission(this,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this,
-//                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-//            return
-//        }
-//    }
+    private fun setUpMap() {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+    }
 
     private fun placeMarkerOnMap(location: LatLng) {
         newMarker = map.addMarker(MarkerOptions()
             .position(location)
-            .title("New Pin")
-            .snippet(location.toString()))
+            .title("New Pin"))
+//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
     }
 
     // makes get request to get all pins stored in database
@@ -77,7 +83,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
              * on a production app. This method is run on the main thread */
             override fun onResponse(call: Call<List<Pin>>, response: Response<List<Pin>>) {
                 /* This will print the response of the network call to the Logcat */
-                Log.d("TAG_", response.body().toString())
+//                Log.d("TAG_", response.body().toString())
                 val items = response.body()
                 val pinsList = mutableListOf<Pin>()
                 if (items != null) {
@@ -85,11 +91,56 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                         pinsList.add(items[i])
                     }
                 }
-                Log.d("Pins: ", pinsList.toString())
                 generateAllPins(pins = pinsList)
             }
         })
     }
+
+//    private fun formatDateTime(date: String): Date? {
+//        val formatter = SimpleDateFormat("EEE, dd LLL yyyy HH:mm:ss z", Locale.getDefault())
+//        formatter.timeZone = TimeZone.getTimeZone("GMT")
+//        //new Date is a variable of type Date
+//        try {
+//            return formatter.parse(date)
+//        } catch (e: ParseException) {
+//            return null
+//        }
+//    }
+//
+//    private fun formatDate(date: Date): String? {
+//        val formatter = SimpleDateFormat("EEE, dd LLL yyyy HH:mm:ss z",
+//            Locale.getDefault())
+//        formatter.timeZone = TimeZone.getTimeZone("PDT")
+//        return formatter.format(date)
+//    }
+
+    private fun String.toDate(dateFormat: String = "EEE, dd LLL yyyy HH:mm:ss z", timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
+        val parser = SimpleDateFormat(dateFormat, Locale.getDefault())
+        parser.timeZone = timeZone
+//        try {
+//            return parser.parse(this)
+//        } catch (e: ParseException) {
+//            return null
+//        }
+        return parser.parse(this)
+    }
+
+    private fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
+        val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+        formatter.timeZone = timeZone
+        return formatter.format(this)
+    }
+
+//    private fun checkDate(date: String): String {
+//        var period = Period.of(0, 0, 7)
+//        var currentDate = LocalDateTime.now()
+//        val formatter = SimpleDateFormat("yyyy-dd-", Locale.getDefault())
+//        formatter.timeZone = TimeZone.getTimeZone("GMT")
+//        if (currentDate > date.plus(period)) {
+//
+//        }
+//    }
+
 
     // takes in list of pin info in string format and converts them into pins on map
     private fun generateAllPins(pins: MutableList<Pin>) {
@@ -102,12 +153,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             // Notes
             val notes = pins[i].notes
             // Pinned_at
-            var pinnedAt = pins[i].pinned_at
-            if (pins[i].pinned_at == null) {
-                pinnedAt = "A placeholder date"
-            }
+            var pinnedAt = pins[i].pinned_at.toDate()
+            Log.d("TAG", pinnedAt.toString())
+            // if pinnedAt is older than some time, make logic to make pin gray??
+            // or create new function to convert to a date, check if its old, and return true or false
+            var strDate = pinnedAt.formatTo("EEE, dd LLL yyyy hh:mm:ss aa")
+            Log.d("TAG", strDate)
 
-            var newPin = map.addMarker(MarkerOptions().position(location).title(pinnedAt).snippet("Click here for more info"))
+            var newPin = map.addMarker(MarkerOptions()
+                .position(location)
+                .title(strDate)
+                .snippet("Click here for more info")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
             newPin.tag = pins[i]
 
         }
@@ -176,8 +233,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                 val date = view.findViewById<TextView>(R.id.tvPinnedAt)
                 val notes = view.findViewById<TextView>(R.id.tvNotes)
+                val hours = view.findViewById<TextView>(R.id.tvHours)
+//                val cookies = view.findViewById<TextView>(R.id.tvAvailableCookies)
                 date.text = "Date Pinned: ${selectedPin.pinned_at.toString()}"
                 notes.text = "Notes: ${selectedPin.notes.toString()}"
+                hours.text = "Hours: ${selectedPin.hours.toString()}"
 
                 dialog.setCancelable(true)
                 dialog.setContentView(view)
@@ -185,25 +245,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             }
         }
 
-//        setUpMap()
+        setUpMap()
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
         // Gets Users current location and zooms to it
         map.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
@@ -218,7 +261,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerClick(marker: Marker): Boolean {
         if (marker.title != "New Pin") {
+            if (this::previousMarker.isInitialized) {
+                // Sets old marker back to regular blue
+                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            }
+            // Sets marker as previousMarker
+            previousMarker = marker
             selectedPin = marker.tag as Pin
+            //Sets current marker color as light blue
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
         }
         // Retrieve the data from the marker.
 

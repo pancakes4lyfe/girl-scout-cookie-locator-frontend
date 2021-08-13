@@ -14,6 +14,10 @@ import helpers.RetroService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 private const val TAG = "Add Pin Activity"
 
@@ -23,8 +27,10 @@ class AddPinActivity : AppCompatActivity() {
     private lateinit var newPin: Pin
 
     private fun createPin() {
+//        val currentDateTime = LocalDateTime.now()
+//        val time = currentDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM))
         //Maybe add conditional for if notes section is empty????
-        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "")
+        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", binding.etTime.text.toString())
     }
 
     private fun saveNewPin(newPin: Pin) {

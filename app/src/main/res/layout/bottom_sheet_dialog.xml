@@ -33,21 +33,33 @@
             android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Course Tracks : 30"
+            android:text="Notes: "
             android:textColor="@color/black"
             android:textSize="15sp" />
 
-        <!--text view for displaying course duration-->
+        <!--text view for displaying hours-->
         <TextView
-            android:id="@+id/tvCookiesAvailable"
+            android:id="@+id/tvHours"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvNotes"
             android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Hours:"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tvAvailableCookies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvHours"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Course Duration : 4 Months"
+            android:text="Available Cookies:"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
