@@ -2,6 +2,7 @@ package com.example.girlscoutcookielocator
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -93,24 +94,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         })
     }
 
-//    private fun formatDateTime(date: String): Date? {
-//        val formatter = SimpleDateFormat("EEE, dd LLL yyyy HH:mm:ss z", Locale.getDefault())
-//        formatter.timeZone = TimeZone.getTimeZone("GMT")
-//        //new Date is a variable of type Date
-//        try {
-//            return formatter.parse(date)
-//        } catch (e: ParseException) {
-//            return null
-//        }
-//    }
-//
-//    private fun formatDate(date: Date): String? {
-//        val formatter = SimpleDateFormat("EEE, dd LLL yyyy HH:mm:ss z",
-//            Locale.getDefault())
-//        formatter.timeZone = TimeZone.getTimeZone("PDT")
-//        return formatter.format(date)
-//    }
-
     private fun String.toDate(dateFormat: String = "EEE, dd LLL yyyy HH:mm:ss z", timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
         val parser = SimpleDateFormat(dateFormat, Locale.getDefault())
         parser.timeZone = timeZone
@@ -141,7 +124,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         Log.d("TAG", "EXPIRED!!")
         return true
     }
-
 
     // takes in list of pin info in string format and converts them into pins on map
     private fun generateAllPins(pins: MutableList<Pin>) {
@@ -186,6 +168,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this,
+                    R.raw.map_style
+                )
+            )
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", e)
+        }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -221,6 +222,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        setMapStyle(map)
         map.setOnMapLongClickListener { LatLng ->
             //Like a console.log to make sure something is happening
             Log.i(TAG, "onMapLongClickListener")
@@ -283,14 +285,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker): Boolean {
         if (marker.title != "New Pin") {
             if (this::previousMarker.isInitialized) {
-                // Sets old marker back to regular blue
+                // Sets old marker back to regular pink
                 previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
             }
             // Sets marker as previousMarker
             previousMarker = marker
             selectedPin = marker.tag as Pin
             //Sets current marker color as light blue
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
         }
         // Retrieve the data from the marker.
 
