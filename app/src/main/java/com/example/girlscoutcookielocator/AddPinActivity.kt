@@ -1,11 +1,16 @@
 package com.example.girlscoutcookielocator
 
+import android.app.AlertDialog.THEME_HOLO_LIGHT
+import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import com.example.girlscoutcookielocator.databinding.ActivityAddPinBinding
 import helpers.Pin
 import helpers.PinResponse
@@ -14,10 +19,12 @@ import helpers.RetroService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.*
 
 private const val TAG = "Add Pin Activity"
 
@@ -27,10 +34,10 @@ class AddPinActivity : AppCompatActivity() {
     private lateinit var newPin: Pin
 
     private fun createPin() {
-//        val currentDateTime = LocalDateTime.now()
-//        val time = currentDateTime.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.MEDIUM))
         //Maybe add conditional for if notes section is empty????
-        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", binding.etTime.text.toString())
+        var start = binding.etStartTime.text.toString()
+        var end = binding.etEndTime.text.toString()
+        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", "$start - $end")
     }
 
     private fun saveNewPin(newPin: Pin) {
@@ -52,6 +59,40 @@ class AddPinActivity : AppCompatActivity() {
         })
     }
 
+    private fun onTimeClick(currentView: EditText) {
+        val cal = Calendar.getInstance()
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+            cal.set(Calendar.HOUR_OF_DAY, hour)
+            cal.set(Calendar.MINUTE, 0)
+            currentView.setText(SimpleDateFormat("hh:mm aa").format(cal.time))
+        }
+        TimePickerDialog(this, 3, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(0),false).show()
+//        binding.tpTime.visibility = View.VISIBLE
+//        Log.i(TAG, "change visibility?")
+//        binding.tpTime.setOnTimeChangedListener { _, hour, minute -> var hour = hour
+//            var amPm = ""
+//            // AM_PM decider logic
+//            when {hour == 0 -> { hour += 12
+//                amPm = "AM"
+//            }
+//                hour == 12 -> amPm = "PM"
+//                hour > 12 -> { hour -= 12
+//                    amPm = "PM"
+//                }
+//                else -> amPm = "AM"
+//            }
+//            if (currentView != null) {
+//                val hour = if (hour < 10) "0" + hour else hour
+//                val min = if (minute < 10) "0" + minute else minute
+//                // display format of time
+//                val msg = "$hour : $min $amPm"
+//                currentView.setText(msg)
+////                currentView.visibility = View.VISIBLE
+//            }
+//        }
+//        binding.tpTime.visibility = View.INVISIBLE
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,9 +106,20 @@ class AddPinActivity : AppCompatActivity() {
 
         //Functionality for back button!!
         binding.backButton.setOnClickListener {
-            Log.i(TAG, "Tap on + button")
+            Log.i(TAG, "Tap on back button")
             val intent = Intent(this@AddPinActivity, MapsActivity::class.java)
             startActivity(intent)
+        }
+
+        //Functionality to bring up time picker when et is clicked
+        binding.etStartTime.setOnClickListener {
+            Log.i(TAG, "Tap on etTime")
+            onTimeClick(binding.etStartTime)
+        }
+
+        binding.etEndTime.setOnClickListener {
+            Log.i(TAG, "Tap on etTime")
+            onTimeClick(binding.etEndTime)
         }
     }
 

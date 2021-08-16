@@ -19,22 +19,17 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import helpers.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.Period
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 
 private const val TAG = "Map Activity"
@@ -48,6 +43,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     private lateinit var previousMarker: Marker
     private lateinit var selectedPin: Pin
+    private var markerOnMap = false
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
@@ -64,8 +60,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private fun placeMarkerOnMap(location: LatLng) {
         newMarker = map.addMarker(MarkerOptions()
             .position(location)
-            .title("New Pin"))
-//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+            .title("New Pin")
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+        markerOnMap = true
     }
 
     // makes get request to get all pins stored in database
@@ -131,41 +128,60 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return formatter.format(this)
     }
 
-//    private fun checkDate(date: String): String {
-//        var period = Period.of(0, 0, 7)
-//        var currentDate = LocalDateTime.now()
-//        val formatter = SimpleDateFormat("yyyy-dd-", Locale.getDefault())
-//        formatter.timeZone = TimeZone.getTimeZone("GMT")
-//        if (currentDate > date.plus(period)) {
-//
-//        }
-//    }
+    private fun checkDate(date: Date): Boolean {
+        var period = Period.of(0, 0, 7)
+        var pinDate = date.formatTo("yyyy-MM-dd")
+        var expireDate = LocalDateTime.now().minus(period).format(DateTimeFormatter.ISO_DATE)
+        Log.d("TAG", "$expireDate")
+        Log.d("TAG", "$pinDate")
+        if (expireDate < pinDate) {
+            Log.d("TAG", "not expired")
+            return false
+        }
+        Log.d("TAG", "EXPIRED!!")
+        return true
+    }
 
 
     // takes in list of pin info in string format and converts them into pins on map
     private fun generateAllPins(pins: MutableList<Pin>) {
+        var pinColor = BitmapDescriptorFactory.HUE_ROSE
+        //redundant??
+        var pinTransparency = 1.0f
         for (i in 0 until pins.count()) {
             // Coordinates
             val latLon = pins[i].lat_lon.split(",").toTypedArray()
             val latitude = latLon[0].toDouble()
             val longitude = latLon[1].toDouble()
             val location = LatLng(latitude, longitude)
+
             // Notes
             val notes = pins[i].notes
             // Pinned_at
-            var pinnedAt = pins[i].pinned_at.toDate()
-            Log.d("TAG", pinnedAt.toString())
-            // if pinnedAt is older than some time, make logic to make pin gray??
-            // or create new function to convert to a date, check if its old, and return true or false
-            var strDate = pinnedAt.formatTo("EEE, dd LLL yyyy hh:mm:ss aa")
+            val pinnedAt = pins[i].pinned_at.toDate()
+
+            // checkDate returns true if pin is expired and false if not
+            if (checkDate(pinnedAt)) {
+                Log.d("TAG", "returned true")
+//                pinColor = BitmapDescriptorFactory.HUE_ORANGE
+                pinTransparency = 0.5f
+            } else {
+                // need this else statement or else all
+                pinTransparency = 1.0f
+            }
+
+            val strDate = pinnedAt.formatTo("EEE, dd LLL yyyy hh:mm aa")
+            val simpleStrDate = pinnedAt.formatTo("EEE, dd LLL yyyy")
             Log.d("TAG", strDate)
 
-            var newPin = map.addMarker(MarkerOptions()
+            val newMarker = map.addMarker(MarkerOptions()
                 .position(location)
-                .title(strDate)
+                .title(simpleStrDate)
                 .snippet("Click here for more info")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-            newPin.tag = pins[i]
+//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_cookie)))
+                .icon(BitmapDescriptorFactory.defaultMarker(pinColor))
+                .alpha(pinTransparency))
+            newMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours)
 
         }
     }
@@ -219,7 +235,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMapClickListener {
             if (this::newMarker.isInitialized) {
                 newMarker.remove()
+                markerOnMap = false
             }
+            if (this::previousMarker.isInitialized) {
+                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+            }
+
         }
 
         map.uiSettings.isZoomControlsEnabled = true
@@ -263,13 +284,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         if (marker.title != "New Pin") {
             if (this::previousMarker.isInitialized) {
                 // Sets old marker back to regular blue
-                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
             }
             // Sets marker as previousMarker
             previousMarker = marker
             selectedPin = marker.tag as Pin
             //Sets current marker color as light blue
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
         }
         // Retrieve the data from the marker.
 
@@ -287,7 +308,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.miAddPin) {
             Log.i(TAG, "Tapped on Add Pin!")
-            if (this::newMarker.isInitialized) {
+            if (this::newMarker.isInitialized && markerOnMap) {
                 //Goes to AddPin activity
                 val intent = Intent(this@MapsActivity, AddPinActivity::class.java)
                 intent.putExtra("coordinates", "${newMarker.position.latitude}, ${newMarker.position.longitude}")
