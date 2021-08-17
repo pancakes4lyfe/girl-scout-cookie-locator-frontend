@@ -16,6 +16,7 @@
         android:contentDescription="@string/back_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="#DCB885"
         app:srcCompat="?attr/actionModeCloseDrawable" />
 
     <TextView

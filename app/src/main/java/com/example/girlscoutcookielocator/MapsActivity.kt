@@ -1,8 +1,11 @@
 package com.example.girlscoutcookielocator
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +36,7 @@ import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+
 private const val TAG = "Map Activity"
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -44,6 +48,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var lastLocation: Location
     private lateinit var previousMarker: Marker
     private lateinit var selectedPin: Pin
+    private lateinit var icon: BitmapDescriptor
     private var markerOnMap = false
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -62,7 +67,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         newMarker = map.addMarker(MarkerOptions()
             .position(location)
             .title("New Pin")
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        )
         markerOnMap = true
     }
 
@@ -127,9 +133,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     // takes in list of pin info in string format and converts them into pins on map
     private fun generateAllPins(pins: MutableList<Pin>) {
-        var pinColor = BitmapDescriptorFactory.HUE_ROSE
+//        var pinColor = BitmapDescriptorFactory.HUE_ROSE
         //redundant??
         var pinTransparency = 1.0f
+        //Checks that icon renders properly
+        val testIcon = bitmapFromVector(applicationContext, R.drawable.ic_cookie_pin)
+        if (testIcon == null) {
+            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)
+        } else {
+            icon = testIcon
+        }
+
         for (i in 0 until pins.count()) {
             // Coordinates
             val latLon = pins[i].lat_lon.split(",").toTypedArray()
@@ -160,14 +174,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 .position(location)
                 .title(simpleStrDate)
                 .snippet("Click here for more info")
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_cookie)))
-                .icon(BitmapDescriptorFactory.defaultMarker(pinColor))
+                .icon(icon)
+//                .icon(BitmapDescriptorFactory.defaultMarker(pinColor))
                 .alpha(pinTransparency))
             newMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours)
 
         }
     }
 
+    //Sets retro styling for google map
     private fun setMapStyle(map: GoogleMap) {
         try {
             // Customize the styling of the base map using a JSON object defined
@@ -184,7 +199,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         } catch (e: Resources.NotFoundException) {
             Log.e(TAG, "Can't find style. Error: ", e)
         }
+    }
 
+    //Converts vectors into usable google maps icons
+    private fun bitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        // below line is use to generate a drawable.
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
+        // below line is use to set bounds to our vector drawable.
+        vectorDrawable!!.setBounds(
+            0,
+            0,
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        // below line is use to create a bitmap for our
+        // drawable which we have added.
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        // below line is use to add bitmap in our canvas.
+        val canvas = Canvas(bitmap)
+        // below line is use to draw our
+        // vector drawable in canvas.
+        vectorDrawable.draw(canvas)
+        // after generating our bitmap we are returning our bitmap.
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,8 +240,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // Trying to get all pins api call
-        // Maybe use doAsync around this??? Or is enqueue async itself
+        //Makes GET request to back end for all pins
         getAllPins()
 
         mapFragment.view?.let {
@@ -240,9 +280,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 markerOnMap = false
             }
             if (this::previousMarker.isInitialized) {
-                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                previousMarker.setIcon(icon)
             }
-
         }
 
         map.uiSettings.isZoomControlsEnabled = true
@@ -282,11 +321,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
     }
 
+    //Changes marker color when it is clicked on
     override fun onMarkerClick(marker: Marker): Boolean {
         if (marker.title != "New Pin") {
             if (this::previousMarker.isInitialized) {
                 // Sets old marker back to regular pink
-                previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                previousMarker.setIcon(icon)
             }
             // Sets marker as previousMarker
             previousMarker = marker
