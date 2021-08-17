@@ -67,7 +67,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         newMarker = map.addMarker(MarkerOptions()
             .position(location)
             .title("New Pin")
-//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         )
         markerOnMap = true
     }
@@ -117,12 +116,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return formatter.format(this)
     }
 
-    private fun checkDate(date: Date): Boolean {
-        var period = Period.of(0, 0, 7)
-        var pinDate = date.formatTo("yyyy-MM-dd")
-        var expireDate = LocalDateTime.now().minus(period).format(DateTimeFormatter.ISO_DATE)
-        Log.d("TAG", "$expireDate")
-        Log.d("TAG", "$pinDate")
+    private fun checkDate(date: Date, periodDays: Int): Boolean {
+        val period = Period.of(0, 0, periodDays)
+        val pinDate = date.formatTo("yyyy-MM-dd")
+        val expireDate = LocalDateTime.now().minus(period).format(DateTimeFormatter.ISO_DATE)
+        Log.d("TAG", expireDate)
+        Log.d("TAG", pinDate)
         if (expireDate < pinDate) {
             Log.d("TAG", "not expired")
             return false
@@ -133,8 +132,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     // takes in list of pin info in string format and converts them into pins on map
     private fun generateAllPins(pins: MutableList<Pin>) {
-//        var pinColor = BitmapDescriptorFactory.HUE_ROSE
-        //redundant??
         var pinTransparency = 1.0f
         //Checks that icon renders properly
         val testIcon = bitmapFromVector(applicationContext, R.drawable.ic_cookie_pin)
@@ -143,43 +140,57 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         } else {
             icon = testIcon
         }
-
         for (i in 0 until pins.count()) {
             // Coordinates
             val latLon = pins[i].lat_lon.split(",").toTypedArray()
             val latitude = latLon[0].toDouble()
             val longitude = latLon[1].toDouble()
             val location = LatLng(latitude, longitude)
-
             // Notes
             val notes = pins[i].notes
             // Pinned_at
             val pinnedAt = pins[i].pinned_at.toDate()
 
-            // checkDate returns true if pin is expired and false if not
-            if (checkDate(pinnedAt)) {
-                Log.d("TAG", "returned true")
-//                pinColor = BitmapDescriptorFactory.HUE_ORANGE
+            // checkDate returns true if pin is expired past the given number of days and false if not
+            if (checkDate(pinnedAt, 14)) {
+                Log.d("TAG", "pin to be deleted")
+                deletePin(pins[i].id)
+            } else if (checkDate(pinnedAt, 7)) {
+                Log.d("TAG", "pin to be expired")
                 pinTransparency = 0.5f
             } else {
-                // need this else statement or else all
+                // need this else statement or else all will stay transparent
+                Log.d("TAG", "pin current")
                 pinTransparency = 1.0f
             }
-
             val strDate = pinnedAt.formatTo("EEE, dd LLL yyyy hh:mm aa")
             val simpleStrDate = pinnedAt.formatTo("EEE, dd LLL yyyy")
-            Log.d("TAG", strDate)
 
-            val newMarker = map.addMarker(MarkerOptions()
+            val createMarker = map.addMarker(MarkerOptions()
                 .position(location)
                 .title(simpleStrDate)
                 .snippet("Click here for more info")
                 .icon(icon)
-//                .icon(BitmapDescriptorFactory.defaultMarker(pinColor))
                 .alpha(pinTransparency))
-            newMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours)
-
+            createMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours)
         }
+    }
+
+    private fun deletePin(id: String) {
+        val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
+        val call = retroInstance.deletePin(id)
+        call.enqueue(object : Callback<PinResponse> {
+            /* The HTTP call failed. This method is run on the main thread */
+            override fun onFailure(call: Call<PinResponse>, t: Throwable) {
+                Log.d("TAG_", "An error happened!")
+                t.printStackTrace()
+            }
+            /* The HTTP call was successful, we should still check status code and response body */
+            override fun onResponse(call: Call<PinResponse>, response: Response<PinResponse>) {
+                /* This will print the response of the network call to the Logcat */
+                Log.d("TAG_", response.body().toString())
+            }
+        })
     }
 
     //Sets retro styling for google map
@@ -266,6 +277,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMapLongClickListener { LatLng ->
             //Like a console.log to make sure something is happening
             Log.i(TAG, "onMapLongClickListener")
+            if (this::previousMarker.isInitialized) {
+                previousMarker.setIcon(icon)
+            }
             if (this::newMarker.isInitialized) {
                 newMarker.remove()
                 placeMarkerOnMap(LatLng)
@@ -294,12 +308,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
 
                 val date = view.findViewById<TextView>(R.id.tvPinnedAt)
-                val notes = view.findViewById<TextView>(R.id.tvNotes)
-                val hours = view.findViewById<TextView>(R.id.tvHours)
+                val notes = view.findViewById<TextView>(R.id.tvNotes2)
+                val hours = view.findViewById<TextView>(R.id.tvHours2)
 //                val cookies = view.findViewById<TextView>(R.id.tvAvailableCookies)
-                date.text = "Date Pinned: ${selectedPin.pinned_at.toString()}"
-                notes.text = "Notes: ${selectedPin.notes.toString()}"
-                hours.text = "Hours: ${selectedPin.hours.toString()}"
+                date.text = selectedPin.pinned_at
+                notes.text = selectedPin.notes.toString()
+                hours.text = selectedPin.hours.toString()
 
                 dialog.setCancelable(true)
                 dialog.setContentView(view)
@@ -332,7 +346,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             previousMarker = marker
             selectedPin = marker.tag as Pin
             //Sets current marker color as light blue
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+            marker.setIcon(bitmapFromVector(applicationContext, R.drawable.ic_cookie_pin_pink))
         }
         // Retrieve the data from the marker.
 

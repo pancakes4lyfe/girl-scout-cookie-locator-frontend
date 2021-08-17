@@ -10,4 +10,5 @@
     <string name="lat_lon">Lat/Lon:</string>
     <string name="optional_information">Optional Information:</string>
     <string name="back_button">back button</string>
+    <string name="looking_for_cookies">Looking for cookies...</string>
 </resources>

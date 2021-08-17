@@ -1,70 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     >
 
-    <RelativeLayout
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="2dp"-->
+    <!--        android:background="#FFF8E2">-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:background="#FFF8E2">
-
+        android:background="#FFF8E2"
+        tools:context=".AddPinActivity">
         <!--text view for displaying course name-->
+
         <TextView
             android:id="@+id/tvPinnedAt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
             android:text="Pinned At:"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="#767267"
             android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!--text view for displaying course tracks-->
-        <TextView
-            android:id="@+id/tvNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvPinnedAt"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="Notes: "
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!--text view for displaying hours-->
         <TextView
             android:id="@+id/tvHours"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvNotes"
+            android:layout_width="52dp"
+            android:layout_height="21dp"
+            android:layout_below="@id/tvPinnedAt"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:text="Hours:"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textAlignment="viewStart"
+            android:textColor="#757575"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPinnedAt" />
 
         <TextView
-            android:id="@+id/tvAvailableCookies"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/tvCookieTypes"
+            android:layout_width="102dp"
+            android:layout_height="20dp"
             android:layout_below="@id/tvHours"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:text="Cookie Types:"
+            android:textAlignment="viewStart"
+            android:textColor="#767267"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvHours" />
+
+        <TextView
+            android:id="@+id/tvCookieTypes2"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
-            android:text="Available Cookies:"
-            android:textColor="@color/black"
-            android:textSize="15sp" />
+            android:textColor="#767267"
+            app:layout_constraintBottom_toTopOf="@+id/tvNotes"
+            app:layout_constraintStart_toEndOf="@+id/tvCookieTypes"
+            tools:text="TextView" />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/tvNotes"
+            android:layout_width="51dp"
+            android:layout_height="21dp"
+            android:layout_below="@id/tvPinnedAt"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Notes: "
+            android:textAlignment="viewStart"
+            android:textColor="#767267"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCookieTypes" />
 
+        <TextView
+            android:id="@+id/tvNotes2"
+            android:layout_width="312dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:textColor="#767267"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvNotes"
+            app:layout_constraintTop_toBottomOf="@+id/tvCookieTypes"
+            tools:text="TextView" />
+
+        <TextView
+            android:id="@+id/tvHours2"
+            android:layout_width="312dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
+            app:layout_constraintStart_toEndOf="@+id/tvHours"
+            tools:text="TextView" />
+
+        <!--    </RelativeLayout>-->
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

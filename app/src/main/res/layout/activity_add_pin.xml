@@ -65,7 +65,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvOptional" />
 
     <TextView
-        android:id="@+id/tvAvailableCookies"
+        android:id="@+id/tvCookieTypes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -84,7 +84,7 @@
         android:text="Additional Notes:"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAvailableCookies" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCookieTypes" />
 
     <EditText
         android:id="@+id/etStartTime"

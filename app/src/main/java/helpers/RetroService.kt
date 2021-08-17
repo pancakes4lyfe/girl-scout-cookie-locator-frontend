@@ -1,10 +1,7 @@
 package helpers
 
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface RetroService {
 
@@ -20,4 +17,10 @@ interface RetroService {
 //        "Content-Type: application/json")
 //    // Can add authorization to 'Headers' section if needed
     fun createPin(@Body params: Pin): Call<PinResponse>
+
+    @PUT("pins/{pin_id}")
+    fun updatePin(@Path("pin_id") pin_id: String, @Body params: Pin): Call<PinResponse>
+
+    @DELETE("pins/{pin_id}")
+    fun deletePin(@Path("pin_id") pin_id: String): Call<PinResponse>
 }
