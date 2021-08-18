@@ -34,6 +34,7 @@
 - Generate a google maps api key for android
 - Finally you will need to create a file in res/values called 'google_maps_api.xml' which will contain your maps api key. It should look something like:
 
+```
 <resources>
     <!--
     TODO: Before you run your application, you need a Google Maps API key.
@@ -58,3 +59,4 @@
     -->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">YOUR-API-KEY-HERE</string>
 </resources>
+```
