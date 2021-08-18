@@ -1,5 +1,6 @@
 package com.example.girlscoutcookielocator
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -55,19 +57,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun setUpMap() {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-            return
+           if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+                return
+            }
         }
-    }
 
     private fun placeMarkerOnMap(location: LatLng) {
         newMarker = map.addMarker(MarkerOptions()
             .position(location)
             .title("New Pin")
-        )
+        )!!
         markerOnMap = true
     }
 
@@ -83,10 +90,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 t.printStackTrace()
             }
             /* The HTTP call was successful, we should still check status code and response body
-             * on a production app. This method is run on the main thread */
+             * on a production app. */
             override fun onResponse(call: Call<List<Pin>>, response: Response<List<Pin>>) {
-                /* This will print the response of the network call to the Logcat */
-//                Log.d("TAG_", response.body().toString())
                 val items = response.body()
                 val pinsList = mutableListOf<Pin>()
                 if (items != null) {
@@ -97,37 +102,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 generateAllPins(pins = pinsList)
             }
         })
-    }
-
-    private fun String.toDate(dateFormat: String = "EEE, dd LLL yyyy HH:mm:ss z", timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
-        val parser = SimpleDateFormat(dateFormat, Locale.getDefault())
-        parser.timeZone = timeZone
-//        try {
-//            return parser.parse(this)
-//        } catch (e: ParseException) {
-//            return null
-//        }
-        return parser.parse(this)
-    }
-
-    private fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
-        val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
-        formatter.timeZone = timeZone
-        return formatter.format(this)
-    }
-
-    private fun checkDate(date: Date, periodDays: Int): Boolean {
-        val period = Period.of(0, 0, periodDays)
-        val pinDate = date.formatTo("yyyy-MM-dd")
-        val expireDate = LocalDateTime.now().minus(period).format(DateTimeFormatter.ISO_DATE)
-        Log.d("TAG", expireDate)
-        Log.d("TAG", pinDate)
-        if (expireDate < pinDate) {
-            Log.d("TAG", "not expired")
-            return false
-        }
-        Log.d("TAG", "EXPIRED!!")
-        return true
     }
 
     // takes in list of pin info in string format and converts them into pins on map
@@ -152,19 +126,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             val pinnedAt = pins[i].pinned_at.toDate()
             // Available Cookies:
             val cookieTypes = pins[i].cookies_available
+            // UpVotes:
+            val upVotes = pins[i].upvote_count
             // checkDate returns true if pin is expired past the given number of days and false if not
-            if (checkDate(pinnedAt, 14)) {
-                Log.d("TAG", "pin to be deleted")
-                deletePin(pins[i].id)
-            } else if (checkDate(pinnedAt, 7)) {
-                Log.d("TAG", "pin to be expired")
-                pinTransparency = 0.5f
-            } else {
-                // need this else statement or else all will stay transparent
-                Log.d("TAG", "pin current")
-                pinTransparency = 1.0f
+            when {
+                checkDate(pinnedAt, 14) -> {
+                    // Pin to be deleted
+                    deletePin(pins[i].id)
+                }
+                checkDate(pinnedAt, 7) -> {
+                    // Pin to be expired
+                    pinTransparency = 0.5f
+                }
+                else -> {
+                    // Pin current
+                    pinTransparency = 1.0f
+                }
             }
-            val strDate = pinnedAt.formatTo("EEE, dd LLL yyyy hh:mm aa")
+            val strDate = pinnedAt.formatTo("EEE, dd LLL yyyy - hh:mm aa")
             val simpleStrDate = pinnedAt.formatTo("EEE, dd LLL yyyy")
 
             val createMarker = map.addMarker(MarkerOptions()
@@ -172,9 +151,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 .title(simpleStrDate)
                 .snippet("Click here for more info")
                 .icon(icon)
-                .alpha(pinTransparency))
-            createMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours, cookieTypes)
+                .alpha(pinTransparency))!!
+            createMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours, cookieTypes, upVotes)
         }
+    }
+
+    private fun String.toDate(dateFormat: String = "EEE, dd LLL yyyy HH:mm:ss z", timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Date {
+        val parser = SimpleDateFormat(dateFormat, Locale.getDefault())
+        parser.timeZone = timeZone
+//        try {
+//            return parser.parse(this)
+//        } catch (e: ParseException) {
+//            return null
+//        }
+        return parser.parse(this)!!
+    }
+
+    private fun Date.formatTo(dateFormat: String, timeZone: TimeZone = TimeZone.getDefault()): String {
+        val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+        formatter.timeZone = timeZone
+        return formatter.format(this)
+    }
+
+    private fun checkDate(date: Date, periodDays: Int): Boolean {
+        val period = Period.of(0, 0, periodDays)
+        val pinDate = date.formatTo("yyyy-MM-dd")
+        val expireDate = LocalDateTime.now().minus(period).format(DateTimeFormatter.ISO_DATE)
+        if (expireDate < pinDate) {
+            // Pin not expired
+            return false
+        }
+        // Pin expired
+        return true
     }
 
     private fun deletePin(id: String) {
@@ -190,6 +198,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             override fun onResponse(call: Call<PinResponse>, response: Response<PinResponse>) {
                 /* This will print the response of the network call to the Logcat */
                 Log.d("TAG_", response.body().toString())
+            }
+        })
+    }
+
+    private fun updatePin(id: String, pin: Pin) {
+        val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
+        val call = retroInstance.updatePin(id, pin)
+        call.enqueue(object : Callback<PinResponse> {
+            /* The HTTP call failed. This method is run on the main thread */
+            override fun onFailure(call: Call<PinResponse>, t: Throwable) {
+                Log.d("TAG_", "An error happened!")
+                t.printStackTrace()
+            }
+            /* The HTTP call was successful, we should still check status code and response body */
+            override fun onResponse(call: Call<PinResponse>, response: Response<PinResponse>) {
+                val aPin = response.body()!!.data!!
+                val simpleDate = aPin.pinned_at.toDate().formatTo("EEE, dd LLL yyyy")
+                val newDate = aPin.pinned_at.toDate().formatTo("EEE, dd LLL yyyy - hh:mm aa")
+                selectedPin = Pin(aPin.id, aPin.lat_lon, aPin.notes, newDate, aPin.hours, aPin.cookies_available, aPin.upvote_count)
+                previousMarker.title = simpleDate
+                previousMarker.tag = selectedPin
             }
         })
     }
@@ -266,8 +295,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -305,28 +333,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Sets up bottom sheet to display on click of a pin's info window
         map.setOnInfoWindowClickListener {
             if (it.title != "New Pin") {
-                val dialog = BottomSheetDialog(this,)
+                val dialog = BottomSheetDialog(this)
                 val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
 
                 val date = view.findViewById<TextView>(R.id.tvPinnedAt)
                 val notes = view.findViewById<TextView>(R.id.tvNotes2)
                 val hours = view.findViewById<TextView>(R.id.tvHours2)
                 val cookieTypes = view.findViewById<TextView>(R.id.tvCookieTypes2)
-//                val cookies = view.findViewById<TextView>(R.id.tvAvailableCookies)
+                val upVotes = view.findViewById<TextView>(R.id.tvUpvotes)
+//
                 date.text = selectedPin.pinned_at
                 notes.text = selectedPin.notes
                 hours.text = selectedPin.hours
                 cookieTypes.text = selectedPin.cookies_available
+                upVotes.text = selectedPin.upvote_count.toString()
 
                 dialog.setCancelable(true)
                 dialog.setContentView(view)
                 dialog.show()
+
+                // Allows upVotes and datetime changes
+                val upvoteButton = view.findViewById<ImageButton>(R.id.ibVerify)
+                upvoteButton.setOnClickListener {
+                    val updatedPin = Pin(selectedPin.id, selectedPin.lat_lon, selectedPin.notes, selectedPin.pinned_at, selectedPin.hours, selectedPin.cookies_available, selectedPin.upvote_count+1)
+                    upVotes.text = updatedPin.upvote_count.toString()
+                    updatePin(updatedPin.id, updatedPin)
+                    date.text = selectedPin.pinned_at
+                }
             }
         }
-
+        //This does the permissions check!
         setUpMap()
-
-        // Gets Users current location and zooms to it
         map.isMyLocationEnabled = true
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
             // Got last known location. In some rare situations this can be null.
@@ -349,13 +386,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             previousMarker = marker
             selectedPin = marker.tag as Pin
             //Sets current marker color as light blue
-            marker.setIcon(bitmapFromVector(applicationContext, R.drawable.ic_cookie_pin_pink))
+            marker.setIcon(bitmapFromVector(applicationContext, R.drawable.ic_cookie_pin_colored))
         }
-        // Retrieve the data from the marker.
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
         return false
     }
 
@@ -381,5 +413,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         return super.onOptionsItemSelected(item)
     }
 
-//    override fun onMarkerClick(p0: Marker?) = false
 }

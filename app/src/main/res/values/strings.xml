@@ -30,4 +30,5 @@
     <string name="hours">Hours:</string>
     <string name="cookie_types">Cookie Types:</string>
     <string name="notes">Notes:</string>
+    <string name="verify_button">Verify Button</string>
 </resources>

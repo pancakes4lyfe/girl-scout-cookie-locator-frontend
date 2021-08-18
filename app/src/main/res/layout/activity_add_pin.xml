@@ -234,13 +234,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/ivOther"
                 android:layout_width="72dp"
                 android:layout_height="71dp"
                 android:layout_gravity="center"
-                app:srcCompat="@android:drawable/ic_menu_help"
-                android:contentDescription="@string/question_mark_image" />
+                android:background="#DCB885"
+                android:contentDescription="@string/question_mark_image"
+                app:srcCompat="@android:drawable/ic_menu_help" />
             <CheckBox
                 android:id="@+id/cbOther"
                 android:layout_width="wrap_content"

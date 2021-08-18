@@ -26,12 +26,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:text="@string/pinned_at"
             android:textAlignment="center"
             android:textColor="#767267"
             android:textSize="18sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -113,6 +116,31 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
             app:layout_constraintStart_toEndOf="@+id/tvHours"
             tools:text="TextView" />
+
+        <ImageButton
+            android:id="@+id/ibVerify"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#72A825"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_myplaces"
+            android:contentDescription="@string/verify_button" />
+
+        <TextView
+            android:id="@+id/tvUpvotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ibVerify"
+            app:layout_constraintEnd_toStartOf="@+id/ibVerify"
+            app:layout_constraintTop_toTopOf="@+id/ibVerify"
+            tools:text="3" />
 
         <!--    </RelativeLayout>-->
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,16 +6,12 @@ import retrofit2.http.*
 interface RetroService {
 
     @GET("pins")
-//    @Headers(
-//        "Accept: application/json",
-//        "Content-Type: application/json")
     fun getPinsList(): Call<List<Pin>>
 
+//    @GET("pins/{pin_id}")
+//    fun getPin(@Path("pin_id") pin_id: String): Call<Pin>
+
     @POST("pins")
-//    @Headers(
-//        "Accept: application/json",
-//        "Content-Type: application/json")
-//    // Can add authorization to 'Headers' section if needed
     fun createPin(@Body params: Pin): Call<PinResponse>
 
     @PUT("pins/{pin_id}")

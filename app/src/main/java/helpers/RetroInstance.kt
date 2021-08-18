@@ -9,7 +9,7 @@ class RetroInstance {
 
     companion object {
 
-        val baseUrl = "http://10.0.2.2:5000/"
+        private const val baseUrl = "http://10.0.2.2:5000/"
 
         fun getRetroInstance(): Retrofit {
 

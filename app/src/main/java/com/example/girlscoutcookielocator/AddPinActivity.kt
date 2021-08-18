@@ -33,7 +33,7 @@ class AddPinActivity : AppCompatActivity() {
         val start = binding.etStartTime.text.toString()
         val end = binding.etEndTime.text.toString()
         val cookies = getAvailableCookies()
-        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", "$start - $end", cookies)
+        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", "$start - $end", cookies, 0)
     }
 
     private fun getAvailableCookies(): String {
@@ -77,12 +77,12 @@ class AddPinActivity : AppCompatActivity() {
 
     private fun onTimeClick(currentView: EditText) {
         val cal = Calendar.getInstance()
-        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, _ ->
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
             cal.set(Calendar.HOUR_OF_DAY, hour)
-            cal.set(Calendar.MINUTE, 0)
+            cal.set(Calendar.MINUTE, minute)
             currentView.setText(SimpleDateFormat("hh:mm aa", Locale.US).format(cal.time))
         }
-        TimePickerDialog(this, 3, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(0),false).show()
+        TimePickerDialog(this, 3, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),false).show()
     }
 
 
