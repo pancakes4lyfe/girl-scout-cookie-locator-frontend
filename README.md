@@ -1,4 +1,4 @@
-# Girl Scout Cookie Locator - Backend
+# Girl Scout Cookie Locator - Front-End
 
 ## Description
 
