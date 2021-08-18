@@ -34,27 +34,27 @@
 - Generate a google maps api key for android
 - Finally you will need to create a file in res/values called 'google_maps_api.xml' which will contain your maps api key. It should look something like:
 
-    <resources>
-        <!--
-        TODO: Before you run your application, you need a Google Maps API key.
+<resources>
+    <!--
+    TODO: Before you run your application, you need a Google Maps API key.
 
-        To get one, follow this link, follow the directions and press "Create" at the end:
+    To get one, follow this link, follow the directions and press "Create" at the end:
 
-        https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=C6:9E:BD:11:55:50:B9:B1:0B:B5:F2:50:FD:45:82:91:BF:E1:F8:AE%3Bcom.example.girlscoutcookielocator
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=C6:9E:BD:11:55:50:B9:B1:0B:B5:F2:50:FD:45:82:91:BF:E1:F8:AE%3Bcom.example.girlscoutcookielocator
 
-        You can also add your credentials to an existing key, using these values:
+    You can also add your credentials to an existing key, using these values:
 
-        Package name:
-        com.example.girlscoutcookielocator
+    Package name:
+    com.example.girlscoutcookielocator
 
-        SHA-1 certificate fingerprint:
-        C6:9E:BD:11:55:50:B9:B1:0B:B5:F2:50:FD:45:82:91:BF:E1:F8:AE
+    SHA-1 certificate fingerprint:
+    C6:9E:BD:11:55:50:B9:B1:0B:B5:F2:50:FD:45:82:91:BF:E1:F8:AE
 
-        Alternatively, follow the directions here:
-        https://developers.google.com/maps/documentation/android/start#get-key
+    Alternatively, follow the directions here:
+    https://developers.google.com/maps/documentation/android/start#get-key
 
-        Once you have your key (it starts with "AIza"), replace the "google_maps_key"
-        string in this file.
-        -->
-        <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">YOUR-API-KEY-HERE</string>
-    </resources>
+    Once you have your key (it starts with "AIza"), replace the "google_maps_key"
+    string in this file.
+    -->
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">YOUR-API-KEY-HERE</string>
+</resources>
