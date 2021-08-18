@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
     >
 
     <!--    <RelativeLayout-->
@@ -26,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
-            android:text="Pinned At:"
+            android:text="@string/pinned_at"
             android:textAlignment="center"
             android:textColor="#767267"
             android:textSize="18sp"
@@ -42,7 +43,7 @@
             android:layout_below="@id/tvPinnedAt"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Hours:"
+            android:text="@string/hours"
             android:textAlignment="viewStart"
             android:textColor="#757575"
             android:textSize="15sp"
@@ -57,7 +58,7 @@
             android:layout_below="@id/tvHours"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Cookie Types:"
+            android:text="@string/cookie_types"
             android:textAlignment="viewStart"
             android:textColor="#767267"
             android:textSize="15sp"
@@ -83,7 +84,7 @@
             android:layout_below="@id/tvPinnedAt"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Notes: "
+            android:text="@string/notes"
             android:textAlignment="viewStart"
             android:textColor="#767267"
             android:textSize="15sp"

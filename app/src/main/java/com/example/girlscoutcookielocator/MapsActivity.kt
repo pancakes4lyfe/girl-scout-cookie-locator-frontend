@@ -150,7 +150,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             val notes = pins[i].notes
             // Pinned_at
             val pinnedAt = pins[i].pinned_at.toDate()
-
+            // Available Cookies:
+            val cookieTypes = pins[i].cookies_available
             // checkDate returns true if pin is expired past the given number of days and false if not
             if (checkDate(pinnedAt, 14)) {
                 Log.d("TAG", "pin to be deleted")
@@ -172,7 +173,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 .snippet("Click here for more info")
                 .icon(icon)
                 .alpha(pinTransparency))
-            createMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours)
+            createMarker.tag = Pin(pins[i].id, pins[i].lat_lon, notes, strDate, pins[i].hours, cookieTypes)
         }
     }
 
@@ -304,16 +305,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Sets up bottom sheet to display on click of a pin's info window
         map.setOnInfoWindowClickListener {
             if (it.title != "New Pin") {
-                val dialog = BottomSheetDialog(this)
+                val dialog = BottomSheetDialog(this,)
                 val view = layoutInflater.inflate(R.layout.bottom_sheet_dialog, null)
 
                 val date = view.findViewById<TextView>(R.id.tvPinnedAt)
                 val notes = view.findViewById<TextView>(R.id.tvNotes2)
                 val hours = view.findViewById<TextView>(R.id.tvHours2)
+                val cookieTypes = view.findViewById<TextView>(R.id.tvCookieTypes2)
 //                val cookies = view.findViewById<TextView>(R.id.tvAvailableCookies)
                 date.text = selectedPin.pinned_at
-                notes.text = selectedPin.notes.toString()
-                hours.text = selectedPin.hours.toString()
+                notes.text = selectedPin.notes
+                hours.text = selectedPin.hours
+                cookieTypes.text = selectedPin.cookies_available
 
                 dialog.setCancelable(true)
                 dialog.setContentView(view)

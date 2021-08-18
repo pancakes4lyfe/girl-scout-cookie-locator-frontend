@@ -11,4 +11,23 @@
     <string name="optional_information">Optional Information:</string>
     <string name="back_button">back button</string>
     <string name="looking_for_cookies">Looking for cookies...</string>
+    <string name="additional_notes">Additional Notes:</string>
+    <string name="dash">-</string>
+    <string name="location_hours">Location Hours:</string>
+    <string name="do_si_do_cookie">Do-Si-Do Cookie</string>
+    <string name="do_si_dos">Do-Si-Dos</string>
+    <string name="tagalongs">Tagalongs</string>
+    <string name="tagalong_cookie">Tagalong Cookie</string>
+    <string name="trefoils">Trefoils</string>
+    <string name="samoas">Samoas</string>
+    <string name="question_mark_image">Question Mark Image</string>
+    <string name="other">Other</string>
+    <string name="trefoil_cookie">Trefoil Cookie</string>
+    <string name="samoa_cookie">Samoa Cookie</string>
+    <string name="thin_mint_cookie">Thin Mint Cookie</string>
+    <string name="thin_mints">Thin Mints</string>
+    <string name="pinned_at">Pinned At:</string>
+    <string name="hours">Hours:</string>
+    <string name="cookie_types">Cookie Types:</string>
+    <string name="notes">Notes:</string>
 </resources>

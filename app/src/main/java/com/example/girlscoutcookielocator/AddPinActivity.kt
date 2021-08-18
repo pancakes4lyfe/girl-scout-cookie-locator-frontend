@@ -1,6 +1,5 @@
 package com.example.girlscoutcookielocator
 
-import android.app.AlertDialog.THEME_HOLO_LIGHT
 import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +8,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import com.example.girlscoutcookielocator.databinding.ActivityAddPinBinding
 import helpers.Pin
 import helpers.PinResponse
@@ -20,10 +19,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 
 private const val TAG = "Add Pin Activity"
@@ -35,9 +30,30 @@ class AddPinActivity : AppCompatActivity() {
 
     private fun createPin() {
         //Maybe add conditional for if notes section is empty????
-        var start = binding.etStartTime.text.toString()
-        var end = binding.etEndTime.text.toString()
-        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", "$start - $end")
+        val start = binding.etStartTime.text.toString()
+        val end = binding.etEndTime.text.toString()
+        val cookies = getAvailableCookies()
+        newPin = Pin("", binding.tvLocation.text.toString(), binding.etNotes.text.toString(), "", "$start - $end", cookies)
+    }
+
+    private fun getAvailableCookies(): String {
+        var cookieTypes = ""
+        cookieTypes += getType(binding.cbDoSiDos)
+        cookieTypes += getType(binding.cbTagalongs)
+        cookieTypes += getType(binding.cbTrefoils)
+        cookieTypes += getType(binding.cbSamoas)
+        cookieTypes += getType(binding.cbThinMints)
+        cookieTypes += getType(binding.cbOther)
+        return cookieTypes.dropLast(2)
+    }
+
+    private fun getType(view: View): String {
+        if (view is CheckBox) {
+            if (view.isChecked) {
+                return view.text.toString() + ", "
+            }
+        }
+        return ""
     }
 
     private fun saveNewPin(newPin: Pin) {
@@ -61,36 +77,12 @@ class AddPinActivity : AppCompatActivity() {
 
     private fun onTimeClick(currentView: EditText) {
         val cal = Calendar.getInstance()
-        val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+        val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, _ ->
             cal.set(Calendar.HOUR_OF_DAY, hour)
             cal.set(Calendar.MINUTE, 0)
-            currentView.setText(SimpleDateFormat("hh:mm aa").format(cal.time))
+            currentView.setText(SimpleDateFormat("hh:mm aa", Locale.US).format(cal.time))
         }
         TimePickerDialog(this, 3, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(0),false).show()
-//        binding.tpTime.visibility = View.VISIBLE
-//        Log.i(TAG, "change visibility?")
-//        binding.tpTime.setOnTimeChangedListener { _, hour, minute -> var hour = hour
-//            var amPm = ""
-//            // AM_PM decider logic
-//            when {hour == 0 -> { hour += 12
-//                amPm = "AM"
-//            }
-//                hour == 12 -> amPm = "PM"
-//                hour > 12 -> { hour -= 12
-//                    amPm = "PM"
-//                }
-//                else -> amPm = "AM"
-//            }
-//            if (currentView != null) {
-//                val hour = if (hour < 10) "0" + hour else hour
-//                val min = if (minute < 10) "0" + minute else minute
-//                // display format of time
-//                val msg = "$hour : $min $amPm"
-//                currentView.setText(msg)
-////                currentView.visibility = View.VISIBLE
-//            }
-//        }
-//        binding.tpTime.visibility = View.INVISIBLE
     }
 
 

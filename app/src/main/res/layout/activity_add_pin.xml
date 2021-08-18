@@ -29,7 +29,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/backButton"
         app:layout_constraintStart_toEndOf="@+id/backButton"
         app:layout_constraintTop_toTopOf="@+id/backButton" />
-
     <TextView
         android:id="@+id/tvLocation"
         android:layout_width="wrap_content"
@@ -59,33 +58,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        android:text="Location Hours:"
+        android:text="@string/location_hours"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvOptional" />
-
-    <TextView
-        android:id="@+id/tvCookieTypes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/cookie_types_available"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHours" />
-
-    <TextView
-        android:id="@+id/tvAdditionalNotes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:text="Additional Notes:"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCookieTypes" />
-
     <EditText
         android:id="@+id/etStartTime"
         android:layout_width="94dp"
@@ -95,8 +71,19 @@
         android:focusable="false"
         android:inputType="time"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
-        app:layout_constraintStart_toEndOf="@+id/tvHours" />
-
+        app:layout_constraintStart_toEndOf="@+id/tvHours"
+        tools:ignore="LabelFor"
+        android:importantForAutofill="no" />
+    <TextView
+        android:id="@+id/tvDash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dash"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/etStartTime"
+        app:layout_constraintEnd_toStartOf="@+id/etEndTime"
+        app:layout_constraintStart_toEndOf="@+id/etStartTime"
+        app:layout_constraintTop_toTopOf="@+id/etStartTime" />
     <EditText
         android:id="@+id/etEndTime"
         android:layout_width="94dp"
@@ -106,30 +93,187 @@
         android:focusable="false"
         android:inputType="time"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvHours"
-        app:layout_constraintStart_toEndOf="@+id/etStartTime" />
+        app:layout_constraintStart_toEndOf="@+id/etStartTime"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+
+    <TextView
+        android:id="@+id/tvCookieTypes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/cookie_types_available"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvHours" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCookieTypes">
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/ivDoSiDo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/do_si_do_cookie"
+                app:srcCompat="@mipmap/do_si_do" />
+            <CheckBox
+                android:id="@+id/cbDoSiDos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/do_si_dos" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <ImageView
+                android:id="@+id/ivTagalong"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:srcCompat="@mipmap/tagalong"
+                android:contentDescription="@string/tagalong_cookie" />
+            <CheckBox
+                android:id="@+id/cbTagalongs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/tagalongs" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/ivTrefoil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:srcCompat="@mipmap/trefoil"
+                android:contentDescription="@string/trefoil_cookie" />
+            <CheckBox
+                android:id="@+id/cbTrefoils"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/trefoils" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout2"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout2">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteX="203dp"
+            tools:layout_editor_absoluteY="195dp">
+            <ImageView
+                android:id="@+id/ivSamoa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:srcCompat="@mipmap/samoa"
+                android:contentDescription="@string/samoa_cookie" />
+            <CheckBox
+                android:id="@+id/cbSamoas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/samoas" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/ivThinMint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                app:srcCompat="@mipmap/thin_mint"
+                android:contentDescription="@string/thin_mint_cookie" />
+            <CheckBox
+                android:id="@+id/cbThinMints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/thin_mints" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/ivOther"
+                android:layout_width="72dp"
+                android:layout_height="71dp"
+                android:layout_gravity="center"
+                app:srcCompat="@android:drawable/ic_menu_help"
+                android:contentDescription="@string/question_mark_image" />
+            <CheckBox
+                android:id="@+id/cbOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/other" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvAdditionalNotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/additional_notes"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
     <EditText
         android:id="@+id/etNotes"
         android:layout_width="344dp"
         android:layout_height="62dp"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:gravity="start|top"
+        android:importantForAutofill="no"
         android:inputType="textMultiLine"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAdditionalNotes" />
+        app:layout_constraintStart_toStartOf="@+id/tvAdditionalNotes"
+        app:layout_constraintTop_toBottomOf="@+id/tvAdditionalNotes"
+        tools:ignore="LabelFor" />
 
-    <TextView
-        android:id="@+id/tvDash"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/etStartTime"
-        app:layout_constraintEnd_toStartOf="@+id/etEndTime"
-        app:layout_constraintStart_toEndOf="@+id/etStartTime"
-        app:layout_constraintTop_toTopOf="@+id/etStartTime" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
